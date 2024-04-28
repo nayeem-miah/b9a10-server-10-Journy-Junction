@@ -26,27 +26,44 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-    const touristCollection = client.db('countryDB').collection('country');
-    //  database data add 
-    app.post('/tourist', async(req, res)=>{
-        const newTourist = req.body;
-        // console.log(newTourist);
-        const result = await touristCollection.insertOne(newTourist);
-        res.send(result);
-        
-    })
-    app.get('/tourist', async(req, res)=>{
-        const cursor = touristCollection.find();
-        const result = await cursor.toArray();
-        res.send(result);
-    })
-    app.get('/newtourist/:id', async(req,res)=>{
+    const touristCollection = client.db("countryDB").collection("country");
+
+    //  database data add
+    app.post("/tourist", async (req, res) => {
+      const newTourist = req.body;
+      // console.log(newTourist);
+      const result = await touristCollection.insertOne(newTourist);
+      res.send(result);
+    });
+    app.get("/tourist", async (req, res) => {
+      const cursor = touristCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/newtourist/:id", async (req, res) => {
       // const id = req.params.id;
       // console.log(id);
       // const query = {_id: new ObjectId(id)};
-      const result = await touristCollection.findOne({_id: new ObjectId(req.params.id)});
+      const result = await touristCollection.findOne({
+        _id: new ObjectId(req.params.id),
+      });
       // console.log(result);
-      res.send(result)
+      res.send(result);
+    });
+    // ---------------email apis ---------------
+    app.get("/myList/:email", async (req, res) => {
+      console.log(req.params.email);
+      // const cursor = userCollection.find();
+      const result = await touristCollection
+        .find({ email: req.params.email })
+        .toArray();
+      res.send(result);
+    });
+    app.delete('/myList/:id', async(req, res)=>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result =await touristCollection.deleteOne(query);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
