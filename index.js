@@ -61,14 +61,39 @@ async function run() {
     });
     // ---------------email apis ---------------
     app.get("/myList/:email", async (req, res) => {
-      console.log(req.params.email);
-      // const cursor = userCollection.find();
       const result = await touristCollection
         .find({ email: req.params.email })
         .toArray();
       res.send(result);
     });
-
+    //  update
+    app.put("/tourist/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id)};
+      const options = { upsert: true };
+      const updatedTourist = req.body;
+      const tourist = {
+        $set: {
+          image: updatedTourist.image,
+          country_Name: updatedTourist.country_Name,
+          tourists_spot_name: updatedTourist.tourists_spot_name,
+          seasonality: updatedTourist.seasonality,
+          location: updatedTourist.location,
+          email: updatedTourist.email,
+          userName: updatedTourist.userName,
+          totaVisitorsPerYear: updatedTourist.totaVisitorsPerYear,
+          travel_time: updatedTourist.travel_time,
+          average_cost: updatedTourist.average_cost,
+          description: updatedTourist.description,
+        },
+      };
+      const result = await touristCollection.updateOne(
+        filter,
+        tourist,
+        options
+      );
+      res.send(result);
+    });
     app.delete("/myList/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
