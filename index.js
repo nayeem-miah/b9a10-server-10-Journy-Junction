@@ -1,14 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 //  middleware
-app.use(cors());
+app.use(cors({
+  origin:["http://localhost:5173/","https://b9a10-my-dream-country-client.web.app/"]
+}));
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bomlehy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -27,7 +29,10 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     const touristCollection = client.db("countryDB").collection("country");
-
+    // ------------------------------------------------------
+    //  client commenter
+    // const clientComment = client.db("countryDB").collection("comment");
+    // -------------------------------------------------------
     //  database data add
     app.post("/tourist", async (req, res) => {
       const newTourist = req.body;
@@ -69,7 +74,7 @@ async function run() {
     //  update
     app.put("/tourist/:id", async (req, res) => {
       const id = req.params.id;
-      const filter = { _id: new ObjectId(id)};
+      const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
       const updatedTourist = req.body;
       const tourist = {
@@ -101,8 +106,22 @@ async function run() {
       res.send(result);
     });
 
+    // ----------------------optional----------------
+    // app.post("/comment", async (req, res) => {
+    //   const newComment = req.body;
+    //   // console.log(newTourist);
+    //   const result = await clientComment.insertOne(newComment);
+    //   res.send(result);
+    // });
+    // app.get("/comment", async (req, res) => {
+    //   const cursor = clientComment.find();
+    //   const result = await cursor.toArray();
+    //   res.send(result);
+    // });
+    // ----------------------------------------------
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
